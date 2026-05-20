@@ -1,0 +1,108 @@
+name: "Telegram Release Notify via Curl"
+description: "Send GitHub release notifications to Telegram with a zero-dependency curl-based composite action."
+author: "nekrasovp"
+
+branding:
+  icon: "send"
+  color: "blue"
+
+inputs:
+  bot-token:
+    description: "Telegram bot token from BotFather. Store it as a GitHub Actions secret."
+    required: true
+  chat-id:
+    description: "Telegram chat, group, supergroup, or channel id. Channel usernames like @my_channel are supported."
+    required: true
+  message-thread-id:
+    description: "Optional Telegram forum topic/thread id for supergroups with topics enabled."
+    required: false
+    default: ""
+  text:
+    description: "Optional custom Telegram message. If empty, the action builds a release message from GitHub context and explicit release inputs."
+    required: false
+    default: ""
+  release-title:
+    description: "Optional release title override. Useful when the action is not triggered by release.published."
+    required: false
+    default: ""
+  release-tag:
+    description: "Optional release tag override. Useful when the action is not triggered by release.published."
+    required: false
+    default: ""
+  release-url:
+    description: "Optional release URL override. Useful when the action is not triggered by release.published."
+    required: false
+    default: ""
+  release-body:
+    description: "Optional release body override. Useful when the action is not triggered by release.published."
+    required: false
+    default: ""
+  include-release-body:
+    description: "Append release notes/body to the generated message. Ignored when text is provided."
+    required: false
+    default: "true"
+  max-body-chars:
+    description: "Maximum number of release-body characters to include before truncation. Set 0 to omit body content."
+    required: false
+    default: "1200"
+  max-message-chars:
+    description: "Maximum Telegram text length to send. Telegram sendMessage allows up to 4096 characters after entity parsing."
+    required: false
+    default: "3900"
+  parse-mode:
+    description: "Optional Telegram parse_mode, for example HTML or MarkdownV2. Empty by default for safe plain text."
+    required: false
+    default: ""
+  disable-notification:
+    description: "Send the Telegram message silently."
+    required: false
+    default: "false"
+  disable-link-preview:
+    description: "Disable Telegram link preview using link_preview_options.is_disabled."
+    required: false
+    default: "false"
+  protect-content:
+    description: "Protect the sent Telegram message from forwarding and saving where Telegram supports it."
+    required: false
+    default: "false"
+
+outputs:
+  sent:
+    description: "true when Telegram accepted the message."
+    value: ${{ steps.telegram.outputs.sent }}
+  http-status:
+    description: "HTTP status returned by Telegram Bot API."
+    value: ${{ steps.telegram.outputs.http-status }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: telegram
+      name: "Send Telegram release notification"
+      shell: bash
+      env:
+        INPUT_BOT_TOKEN: ${{ inputs.bot-token }}
+        INPUT_CHAT_ID: ${{ inputs.chat-id }}
+        INPUT_MESSAGE_THREAD_ID: ${{ inputs.message-thread-id }}
+        INPUT_TEXT: ${{ inputs.text }}
+        INPUT_RELEASE_TITLE: ${{ inputs.release-title }}
+        INPUT_RELEASE_TAG: ${{ inputs.release-tag }}
+        INPUT_RELEASE_URL: ${{ inputs.release-url }}
+        INPUT_RELEASE_BODY: ${{ inputs.release-body }}
+        INPUT_INCLUDE_RELEASE_BODY: ${{ inputs.include-release-body }}
+        INPUT_MAX_BODY_CHARS: ${{ inputs.max-body-chars }}
+        INPUT_MAX_MESSAGE_CHARS: ${{ inputs.max-message-chars }}
+        INPUT_PARSE_MODE: ${{ inputs.parse-mode }}
+        INPUT_DISABLE_NOTIFICATION: ${{ inputs.disable-notification }}
+        INPUT_DISABLE_LINK_PREVIEW: ${{ inputs.disable-link-preview }}
+        INPUT_PROTECT_CONTENT: ${{ inputs.protect-content }}
+        EVENT_RELEASE_TITLE: ${{ github.event.release.name }}
+        EVENT_RELEASE_TAG: ${{ github.event.release.tag_name }}
+        EVENT_RELEASE_URL: ${{ github.event.release.html_url }}
+        EVENT_RELEASE_BODY: ${{ github.event.release.body }}
+        EVENT_RELEASE_AUTHOR: ${{ github.event.release.author.login }}
+        GITHUB_REPOSITORY_NAME: ${{ github.repository }}
+        GITHUB_REF_NAME_VALUE: ${{ github.ref_name }}
+        GITHUB_SERVER_URL_VALUE: ${{ github.server_url }}
+        GITHUB_ACTOR_VALUE: ${{ github.actor }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/send-telegram.sh"

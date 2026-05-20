@@ -1,0 +1,24 @@
+name: Custom Telegram notification
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: nekrasovp/telegram-release-notify@v1
+        with:
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          disable-link-preview: true
+          text: |
+            🚀 Release published
+
+            Repository: ${{ github.repository }}
+            Tag: ${{ github.event.release.tag_name }}
+            ${{ github.event.release.html_url }}

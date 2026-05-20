@@ -1,0 +1,22 @@
+# Optional maintainer CI template.
+#
+# Marketplace docs currently say an action repository must not contain workflow files.
+# Keep this file as an example, or copy it only if you decide CI is more important than
+# strict Marketplace packaging requirements for your repository.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make test

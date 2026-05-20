@@ -1,0 +1,30 @@
+name: Release and notify Telegram
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes
+
+      - name: Notify Telegram
+        uses: nekrasovp/telegram-release-notify@v1
+        with:
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          release-title: ${{ github.ref_name }}
+          release-tag: ${{ github.ref_name }}
+          release-url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+          include-release-body: false
