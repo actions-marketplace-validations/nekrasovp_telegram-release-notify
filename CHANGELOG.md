@@ -16,4 +16,4 @@ Initial public release.
 - Protected content option.
 - Message/body truncation safeguards.
 - Local smoke tests using fake `curl`.
-- Marketplace publishing guide and usage examples.
+- Telegram setup, troubleshooting, and usage examples.

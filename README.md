@@ -161,12 +161,6 @@ make test
 
 The tests use a fake `curl` binary and do not call Telegram.
 
-## Publishing to GitHub Marketplace
-
-Read [`docs/publish-to-marketplace.md`](docs/publish-to-marketplace.md).
-
-Important: GitHub Marketplace requires the action repository to be public, to have a single root action metadata file, to contain no workflow files, and to use a unique metadata `name`. Keep this repository focused on this one action.
-
 ## Security
 
 - Never commit `TELEGRAM_BOT_TOKEN`.
